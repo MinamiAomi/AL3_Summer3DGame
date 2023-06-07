@@ -3,6 +3,8 @@
 namespace AomiEngine {
 
 	int Main() {
+
+
 		return 0;
 	}
 
