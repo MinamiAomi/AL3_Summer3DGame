@@ -1,28 +1,39 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source">
-      <UniqueIdentifier>{aeb88204-0874-483d-b122-0befd7474d90}</UniqueIdentifier>
+    <Filter Include="Math">
+      <UniqueIdentifier>{c6af5941-ccd3-432a-b978-cd4724a69db5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource">
-      <UniqueIdentifier>{750e782f-72d5-48ed-a19e-f916a5231308}</UniqueIdentifier>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{a006b338-0691-4aa4-b5bd-ca1ed2af962d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource\Shader">
-      <UniqueIdentifier>{9fab3cff-94db-4ec4-a284-a1b3db8dd98f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Include">
-      <UniqueIdentifier>{633ce7f0-cee6-461c-8b45-f336e4c4834c}</UniqueIdentifier>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{5ef8e73f-b7d6-45f5-9409-f4fc09d3f1f0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="AomiEngine.cpp">
-      <Filter>Source</Filter>
+    <ClCompile Include="..\AomiEngineMath\MathUtils.cpp">
+      <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="..\AomiEngineUtils\StringUtils.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="AomiEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AomiEngine.hpp">
-      <Filter>Include</Filter>
+    <ClInclude Include="..\AomiEngineMath\MathUtils.hpp">
+      <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="..\AomiEngineUtils\Assert.hpp">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AomiEngineUtils\Bitset.hpp">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AomiEngineUtils\StringUtils.hpp">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="AomiEngine.hpp" />
   </ItemGroup>
 </Project>
