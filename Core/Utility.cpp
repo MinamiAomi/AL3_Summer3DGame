@@ -1,25 +1,8 @@
 #include "Utility.h"
 
-#include <Windows.h>
+#include <format>
 
 namespace Utility {
-
-    void Print(const std::string& msg) {
-        OutputDebugStringA(msg.c_str());
-    }
-
-    void Print(const std::wstring& msg) {
-        OutputDebugStringW(msg.c_str());
-    }
-
-    int32_t MsgBox(const std::string& msg, const std::string& caption, uint32_t type) {
-        MessageBoxA(nullptr, msg.c_str(), caption.c_str(), type);
-    }
-
-    int32_t MsgBox(const std::wstring& msg, const std::wstring& caption, uint32_t type) {
-        MessageBoxW(nullptr, msg.c_str(), caption.c_str(), type);
-    }
-
 
     std::wstring ConvertString(const std::string& str) {
         if (str.empty()) {
@@ -47,5 +30,12 @@ namespace Utility {
         return result;
     }
 
-}
+    void AssertIfFailed(HRESULT hr, const wchar_t* str) {
+        if (FAILED(hr)) {
+            MessageBoxW(nullptr, str, L"HRESUT FAILED", S_OK);
+            OutputDebugStringW(std::format(L"\n/////HRESULT FAILED/////\n{} = {}\n/////HRESULT FAILED/////\n\n", str, hr).c_str());
+            std::exit(EXIT_FAILURE);
+        }
+    }
 
+}
