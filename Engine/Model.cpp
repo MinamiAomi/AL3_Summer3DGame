@@ -21,6 +21,9 @@ namespace {
 
 ModelInstance::ModelInstance() : castShadow_(true), receiveShadow_(true) {
     modelInstanceBuffer_.Create(sizeof(ModelInstanceConstant));
+    ModelInstanceConstant data;
+    data.worldMatrix = Matrix4x4::identity;
+    modelInstanceBuffer_.Copy(data);
 }
 
 void Model::CreateFromOBJ(const std::filesystem::path& path) {
@@ -57,12 +60,12 @@ void Model::LoadOBJFile(const std::filesystem::path& path) {
         else if (identifier == "v") {
             Vector3& position = positions.emplace_back();
             iss >> position.x >> position.y >> position.z;
-            position.z = -position.z;
+           // position.z = -position.z;
         }
         else if (identifier == "vn") {
             Vector3& normal = normals.emplace_back();
             iss >> normal.x >> normal.y >> normal.z;
-            normal.z = -normal.z;
+           // normal.z = -normal.z;
         }
         else if (identifier == "vt") {
             Vector2& texcoord = texcoords.emplace_back();
@@ -132,9 +135,9 @@ void Model::LoadOBJFile(const std::filesystem::path& path) {
             }
 
             for (uint32_t i = 0; i < face.size() - 2; ++i) {
-                indices.emplace_back(face[i + 2]);
-                indices.emplace_back(face[i + 1]);
                 indices.emplace_back(face[0]);
+                indices.emplace_back(face[i + 1]);
+                indices.emplace_back(face[i + 2]);
             }
         }
     }
@@ -188,7 +191,12 @@ void Model::LoadMTLFile(const std::filesystem::path& path) {
         else if (identifier == "map_Kd") {
             std::string textureName;
             iss >> textureName;
+            /*auto p = path.parent_path();
+            auto v = path.parent_path() / textureName;
+            p;
+            v;*/
             materials_.back().SetTexture(TextureManager::Load(path.parent_path() / textureName));
+            materials_.back().SetColor({ 1.0f,1.0f,1.0f,1.0f });
         }
         else if (identifier == "Kd") {
             Vector4 color;

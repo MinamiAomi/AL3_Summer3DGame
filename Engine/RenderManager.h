@@ -15,6 +15,7 @@ class Graphics;
 class ImGuiManager;
 class Texture;
 class ModelInstance;
+class Sprite;
 
 class RenderManager {
 public:
@@ -28,6 +29,7 @@ public:
     void Destroy();
 
     void AddModelInstance(const ModelInstance& modelInstance);
+    void AddSprite(const Sprite& sprite);
     void Render();
 
     void SetCamera(const Camera& camera) { camera_ = &camera; }
@@ -51,10 +53,12 @@ private:
     PipelineState shadowPSO_;
     PipelineState defaultPSO_;
     PipelineState receiveShadowPSO_;
+    PipelineState spritePSO_;
 
     ShadowBuffer shadowBuffer_;
 
     const Camera* camera_;
+    Matrix4x4 spriteMatrix_;
     const DirectionalLight* sunLight_;
     UploadBuffer sceneConstantBuffer_;
     UploadBuffer shadowMatricesBuffer_;
@@ -70,7 +74,12 @@ private:
         uint32_t indexCount;
         uint32_t indexStartLocation;
     };
+    struct RenderSprite {
+        D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
+        D3D12_GPU_DESCRIPTOR_HANDLE texture;
+    };
     std::vector<RenderObject> shadowPassObjects_;
     std::vector<RenderObject> defaultPassObjects_;
     std::vector<RenderObject> receiveShadowPassObjects_;
+    std::vector<RenderSprite> spritePassObjects_;
 };

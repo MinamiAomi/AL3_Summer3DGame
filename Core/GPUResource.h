@@ -88,16 +88,16 @@ public:
 
     void Create(size_t size);
 
-    void Copy(const void* srcData, size_t size);
+    void Copy(const void* srcData, size_t size) const;
     template<class T>
-    void Copy(const T& srcData) { Copy(&srcData, sizeof(srcData)); }
+    void Copy(const T& srcData) const { Copy(&srcData, sizeof(srcData)); }
 
     size_t GetBufferSize() const { return bufferSize_; }
     void* GetCPUData() const { return cpuData_; }
 
 private:
-    size_t bufferSize_;
-    void* cpuData_;
+    size_t bufferSize_ = 0;
+    void* cpuData_ = nullptr;
 };
 
 class GPUBuffer : public GPUResource {

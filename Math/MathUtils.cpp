@@ -170,6 +170,9 @@ Quaternion Quaternion::MakeFromOrthonormal(const Vector3& x, const Vector3& y, c
 Quaternion Quaternion::Slerp(float t, const Quaternion& start, const Quaternion& end) noexcept {
     Quaternion s = start;
     float dot = Dot(start, end);
+    if (dot > 0.9999f) {
+        return Lerp(t, start, end);
+    }
     // q1, q2が反対向きの場合
     if (dot < 0) {
         s.x = -s.x;
