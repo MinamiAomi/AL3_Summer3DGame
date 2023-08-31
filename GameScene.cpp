@@ -31,9 +31,9 @@ void GameScene::LoadResource() {
     LoadModel("Resource/player/body.obj");
     LoadModel("Resource/player/bullet.obj");
     LoadModel("Resource/ground/ground.obj");
-    LoadModel("Resource/cannon/cannon.obj");
     LoadModel("Resource/enemy/enemy.obj");
     LoadModel("Resource/enemy/apple.obj");
+    LoadModel("Resource/skydome/skydome.obj");
 }
 
 void GameScene::CreateGameObjects() {

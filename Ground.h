@@ -13,5 +13,6 @@ public:
 
 private:
     ModelInstance modelInstance_;
+    ModelInstance skydomeInstance_;
     DirectionalLight sunLight_;
 };
