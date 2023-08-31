@@ -186,7 +186,7 @@ void UploadBuffer::Create(size_t size) {
     ASSERT_IF_FAILED(resource_->Map(0, nullptr, &cpuData_));
 }
 
-void UploadBuffer::Copy(const void* srcData, size_t size) {
+void UploadBuffer::Copy(const void* srcData, size_t size) const {
     assert(size <= bufferSize_);
     memcpy(cpuData_, srcData, size);
 }

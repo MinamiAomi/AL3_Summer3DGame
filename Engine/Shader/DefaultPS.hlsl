@@ -48,7 +48,7 @@ float32_t Shadow(VSOutput input) {
 
             if (shadowMapUV.x >= 0.0f && shadowMapUV.x <= 1.0f &&
                 shadowMapUV.y >= 0.0f && shadowMapUV.y <= 1.0f) {
-                float bias = 0.00001f;
+                float bias = 0.001f;
                 return shadowMaps_.SampleCmpLevelZero(shadowSampler_, float32_t3(shadowMapUV, i), depthInShadowSpace - bias);
             }
         }
@@ -70,6 +70,7 @@ PSOutput main(VSOutput input) {
     float32_t shadow = Shadow(input);
     output.color = lerp(output.color, shadowColor, shadow);
 #endif
+    
 
     output.color.w = 1.0f;
     return output;

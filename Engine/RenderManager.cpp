@@ -4,6 +4,7 @@
 
 #include <filesystem>
 
+#include "Core/Window.h"
 #include "Core/Graphics.h"
 #include "Core/ImGuiManager.h"
 #include "Core/ShaderCompiler.h"
@@ -11,6 +12,7 @@
 #include "Core/Texture.h"
 #include "Core/TextureManager.h"
 #include "Model.h"
+#include "Sprite.h"
 
 namespace {
 
@@ -48,6 +50,11 @@ void RenderManager::Create() {
     CreatePipelineStateObjects();
     CreateBuffers();
 
+    auto& window = Window::Get();
+    spriteMatrix_ = Matrix4x4::MakeOrthographicProjection(float(window.GetClientWidth()), float(window.GetClientHeight()), 0.0f, 1.0f);
+    spriteMatrix_.m[1][1] *= -1.0f;
+    spriteMatrix_.m[3][0] = -1.0f;
+    spriteMatrix_.m[3][1] = 1.0f;
     defaultTexture_ = TextureManager::Load("Resource/white.png");
 }
 
@@ -80,6 +87,21 @@ void RenderManager::AddModelInstance(const ModelInstance& modelInstance) {
             defaultPassObjects_.emplace_back(renderObject);
         }
     }
+}
+
+void RenderManager::AddSprite(const Sprite& sprite) {
+    sprite.UpdateBuffers(spriteMatrix_);
+
+    RenderSprite renderSprite{};
+    renderSprite.vertexBufferView = sprite.vertexBufferView_;
+    if (sprite.texture_) {
+        renderSprite.texture = sprite.texture_->GetSRV().GPU();
+    }
+    else {
+        renderSprite.texture = defaultTexture_->GetSRV().GPU();
+    }
+
+    spritePassObjects_.emplace_back(renderSprite);
 }
 
 void RenderManager::Render() {
@@ -152,6 +174,13 @@ void RenderManager::Render() {
         commandList.DrawIndexed(object.indexCount, object.indexStartLocation);
     }
 
+    commandList.SetPipelineState(spritePSO_);
+    for (auto& sprite : spritePassObjects_) {
+        commandList.SetGraphicsRootDescriptorTable(kRPTexture, sprite.texture);
+        commandList.SetVertexBuffer(sprite.vertexBufferView);
+        commandList.Draw(6);
+    }
+   
     imguiManager_->Render();
     commandList.TransitionBarrier(colorBuffer, D3D12_RESOURCE_STATE_PRESENT);
     commandList.CommitResourceBarrier();
@@ -161,6 +190,7 @@ void RenderManager::Render() {
     shadowPassObjects_.clear();
     defaultPassObjects_.clear();
     receiveShadowPassObjects_.clear();
+    spritePassObjects_.clear();
 }
 
 void RenderManager::CreateRootSignature() {
@@ -303,6 +333,58 @@ void RenderManager::CreatePipelineStateObjects() {
         desc.PS = CD3DX12_SHADER_BYTECODE(ps->GetBufferPointer(), ps->GetBufferSize());
         receiveShadowPSO_.Create(desc);
     }
+    {
+        auto vs = ShaderCompiler::Compile(shaderPath + "SpriteVS.hlsl", L"vs_6_0");
+        auto ps = ShaderCompiler::Compile(shaderPath + "SpritePS.hlsl", L"ps_6_0");
+
+        D3D12_GRAPHICS_PIPELINE_STATE_DESC desc{};
+        desc.pRootSignature = rootSignature_.GetRootSignature().Get();
+        desc.VS = CD3DX12_SHADER_BYTECODE(vs->GetBufferPointer(), vs->GetBufferSize());
+        desc.PS = CD3DX12_SHADER_BYTECODE(ps->GetBufferPointer(), ps->GetBufferSize());
+        desc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
+
+        D3D12_BLEND_DESC blendDesc{};
+        auto& renderTarget = blendDesc.RenderTarget[0];
+        renderTarget.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+        renderTarget.BlendOpAlpha = D3D12_BLEND_OP_ADD;
+        renderTarget.SrcBlendAlpha = D3D12_BLEND_ONE;
+        renderTarget.DestBlendAlpha = D3D12_BLEND_ZERO;
+        renderTarget.BlendEnable = true;
+        renderTarget.BlendOp = D3D12_BLEND_OP_ADD;
+        renderTarget.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+        renderTarget.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;	// 1.0f-ソースのアルファ値
+        desc.BlendState = blendDesc;
+
+        D3D12_RASTERIZER_DESC rasterizerDesc{};
+        rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
+        rasterizerDesc.CullMode = D3D12_CULL_MODE_NONE;
+        desc.RasterizerState = rasterizerDesc;
+
+        D3D12_DEPTH_STENCIL_DESC depthStencilDesc{};
+        depthStencilDesc.DepthEnable = TRUE;
+        depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+        depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+        desc.DepthStencilState = depthStencilDesc;
+
+        D3D12_INPUT_ELEMENT_DESC inputElements[]{
+            { "POSITION",   0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+            { "TEXCOORD",   0, DXGI_FORMAT_R32G32_FLOAT,    0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+            { "COLOR",     0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        };
+
+        D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
+        inputLayoutDesc.NumElements = _countof(inputElements);
+        inputLayoutDesc.pInputElementDescs = inputElements;
+        desc.InputLayout = inputLayoutDesc;
+
+        desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+
+        desc.NumRenderTargets = 1;
+        desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+        desc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+        desc.SampleDesc = DXGI_SAMPLE_DESC{ .Count = 1, .Quality = 0 };
+        spritePSO_.Create(desc);
+    }
 }
 
 
@@ -348,17 +430,18 @@ void RenderManager::UpdateShadowMatrices() {
     Matrix4x4 lightViewProjectionMatrix;
     {
         float epsilon = 0.0001f;
-        float distance = 5000.0f;
+        float distance = 50.0f;
+        float nearClip = 1.0f;
+        float farClip = 100.0f;
         Vector3 dir = sunLight_->direction.Normalized();
         if (1.0f - std::abs(Dot(dir, Vector3::right)) < epsilon) {
-            lightViewMatrix = Matrix4x4::MakeAffineInverse(Matrix4x4::MakeLookRotation(dir, Vector3::up), -dir * distance);
+            lightViewMatrix = Matrix4x4::MakeAffineInverse(Matrix4x4::MakeLookRotation(dir, Vector3::up), -dir * distance + camera_->GetPosition());
         }
         else {
-            lightViewMatrix = Matrix4x4::MakeAffineInverse(Matrix4x4::MakeLookRotation(dir, Vector3::right), -dir * distance);
+            lightViewMatrix = Matrix4x4::MakeAffineInverse(Matrix4x4::MakeLookRotation(dir, Vector3::right), -dir * distance + camera_->GetPosition());
         }
-        float nearClip = 1.0f;
-        float farClip = distance * 2.0f;
         lightProjectionMatrix = Matrix4x4::MakeOrthographicProjection(float(kShadowMapWidth), float(kShadowMapHeight), nearClip, farClip);
+
         lightViewProjectionMatrix = lightViewMatrix * lightProjectionMatrix;
     }
 

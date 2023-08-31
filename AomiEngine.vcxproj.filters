@@ -19,6 +19,12 @@
     <Filter Include="Game">
       <UniqueIdentifier>{12b3aca5-bb79-4725-8cf9-9d1907e1086d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Player">
+      <UniqueIdentifier>{10aa2350-ad9e-46be-8566-5c5abcccb5f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Enemy">
+      <UniqueIdentifier>{6dc559d1-96a0-4f85-aff3-2c3603088075}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Graphics.h">
@@ -117,6 +123,57 @@
     <ClInclude Include="GameScene.h">
       <Filter>Game</Filter>
     </ClInclude>
+    <ClInclude Include="Ground.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="FollowCamera.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Transform.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Input.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerStateManager.h">
+      <Filter>Game\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerParts.h">
+      <Filter>Game\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerState.h">
+      <Filter>Game\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Game\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerBullet.h">
+      <Filter>Game\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Game\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyApple.h">
+      <Filter>Game\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionManager.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionConfig.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Sprite.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemManager.h">
+      <Filter>Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -207,6 +264,48 @@
     <ClCompile Include="GameScene.cpp">
       <Filter>Game</Filter>
     </ClCompile>
+    <ClCompile Include="Ground.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="FollowCamera.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Input.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerParts.cpp">
+      <Filter>Game\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerState.cpp">
+      <Filter>Game\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Game\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerStateManager.cpp">
+      <Filter>Game\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerBullet.cpp">
+      <Filter>Game\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Game\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyApple.cpp">
+      <Filter>Game\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Collider.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionManager.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Sprite.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemManager.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Externals\imgui\LICENSE.txt">
@@ -233,6 +332,12 @@
       <Filter>Engine\Shader</Filter>
     </None>
     <None Include="Engine\Shader\ReceiveShadowPS.hlsl">
+      <Filter>Engine\Shader</Filter>
+    </None>
+    <None Include="Engine\Shader\SpriteVS.hlsl">
+      <Filter>Engine\Shader</Filter>
+    </None>
+    <None Include="Engine\Shader\SpritePS.hlsl">
       <Filter>Engine\Shader</Filter>
     </None>
   </ItemGroup>
