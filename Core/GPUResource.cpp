@@ -201,11 +201,11 @@ void GPUBuffer::Create(size_t size) {
         &heapProps,
         D3D12_HEAP_FLAG_NONE,
         &desc,
-        D3D12_RESOURCE_STATE_GENERIC_READ,
+        D3D12_RESOURCE_STATE_COMMON,
         nullptr,
         IID_PPV_ARGS(resource_.ReleaseAndGetAddressOf())));
 
-    currentState_ = D3D12_RESOURCE_STATE_GENERIC_READ;
+    currentState_ = D3D12_RESOURCE_STATE_COMMON;
     bufferSize_ = size;
 }
 
